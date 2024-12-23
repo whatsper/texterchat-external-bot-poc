@@ -1,4 +1,4 @@
-import { OAuth2Client } from 'google-auth-library';
+import { Certificates, OAuth2Client } from 'google-auth-library';
 
 /**
  * Map of token value to expiration timestamp in milliseconds.
@@ -8,7 +8,21 @@ const validCachedTokens: {
     [token: string]: number; 
 } = {};
 
+let certificates: Certificates | null = null;
+
 const authClient = new OAuth2Client();
+
+async function getCertificates(): Promise<Certificates> {
+    if (!certificates) {
+        const response = await fetch('https://www.googleapis.com/oauth2/v1/certs');
+        if (!response.ok) {
+            const data = await response.text();
+            throw new Error('Error getting google oauth certificates. Status: ' + response.status + '; Response: ' + JSON.stringify(data));
+        }
+        certificates = await response.json();
+    }
+    return certificates as Certificates;
+}
 
 /**
  * Verifies the given token is a valid Google OAuth token and the `email` claim in the token matches the expected service account.
@@ -33,9 +47,10 @@ export async function verifyPubSubToken(token: string, expectedServiceAccount: s
 
     try {
 
-        const ticket = await authClient.verifyIdToken({
-            idToken: token,
-        });
+        const ticket = await authClient.verifySignedJwtWithCertsAsync(
+            token,
+            await getCertificates(),
+        );
 
         const claim = ticket.getPayload();
 
