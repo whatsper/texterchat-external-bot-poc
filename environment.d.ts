@@ -10,6 +10,15 @@ declare global {
              * push subscription request. Optional value, if not provided - authentication not used
              */
             JWT_SERVICE_ACCOUNT_NAME?: string;
+            /**
+             * Base URL of TexterChat inbox backend.
+             * Usually looks like https://PROJECTID.texterchat.com/server
+             */
+            TEXTER_BASE_URL?: string;
+            /**
+             * API token to call texterchat APIs
+             */
+            TEXTER_API_TOKEN?: string;
         }
     }
 }

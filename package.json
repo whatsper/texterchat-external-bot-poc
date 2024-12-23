@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "rm -rf ./build/* && npx tsc",
-    "start": "npm run build && npx tsc -w",
+    "start": "npm run build && npx concurrently \"npx tsc -w\" \"npm run express-dev\" --kill-others -i --default-input-target 1",
     "express": "node build/index.js",
     "express-dev": "NODE_ENV=development npx nodemon build/index.js"
   },
@@ -30,6 +30,7 @@
     "@types/express": "^5.0.0",
     "@types/lodash": "^4.17.13",
     "@types/node": "^22.8.1",
+    "concurrently": "^9.1.0",
     "nodemon": "^3.1.7",
     "type-fest": "^4.26.1",
     "typescript": "^5.6.3"

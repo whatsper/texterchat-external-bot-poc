@@ -12,9 +12,11 @@ export function createConfig(
         type: 'object',
         properties: {
             GOOGLE_SERVICE_ACCOUNT_KEY: { type: 'string' },
+            TEXTER_BASE_URL: { type: 'string' },
+            TEXTER_API_TOKEN: { type: 'string' },
             JWT_SERVICE_ACCOUNT_NAME: { type: 'string' },
         },
-        required: ['GOOGLE_SERVICE_ACCOUNT_KEY'],
+        required: ['GOOGLE_SERVICE_ACCOUNT_KEY', 'TEXTER_BASE_URL', 'TEXTER_API_TOKEN'],
     });
 
     if (!validateEnvironment(process.env)) {
@@ -31,6 +33,8 @@ export function createConfig(
             googleAppCredentials: JSON.parse(
                 readFileSync(process.env.GOOGLE_SERVICE_ACCOUNT_KEY).toString()
             ),
+            texterBaseUrl: process.env.TEXTER_BASE_URL,
+            texterApiToken: process.env.TEXTER_API_TOKEN,
             jwtServiceAccountName: process.env.JWT_SERVICE_ACCOUNT_NAME,
         },
     };
