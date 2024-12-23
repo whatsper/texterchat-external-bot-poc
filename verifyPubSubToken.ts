@@ -1,3 +1,5 @@
+import { OAuth2Client } from 'google-auth-library';
+
 /**
  * Map of token value to expiration timestamp in milliseconds.
  * We don't need to store token `email` claim to verify, because expected value can't change without redeploy and it kept in memory
@@ -5,6 +7,8 @@
 const validCachedTokens: {
     [token: string]: number; 
 } = {};
+
+const authClient = new OAuth2Client();
 
 /**
  * Verifies the given token is a valid Google OAuth token and the `email` claim in the token matches the expected service account.
@@ -28,20 +32,18 @@ export async function verifyPubSubToken(token: string, expectedServiceAccount: s
     }
 
     try {
-        const queryParams = new URLSearchParams();
-        queryParams.set('id_token', token);
-        const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?${queryParams.toString()}`);
-        if (!response.ok) {
-            const data = await response.text();
-            console.error('Error verifying token', { status: response.status, data });
-            return false;
-        }
-        const data = await response.json();
-        if(data.email === expectedServiceAccount){
-            validCachedTokens[token] = parseInt(data.exp, 10) * 1000;
+
+        const ticket = await authClient.verifyIdToken({
+            idToken: token,
+        });
+
+        const claim = ticket.getPayload();
+
+        if(claim && claim.email === expectedServiceAccount && claim.email_verified){
+            validCachedTokens[token] = claim.exp * 1000;
             return true;
         } else {
-            console.warn('Token email claim does not match expected service account', data);
+            console.warn('Token email claims does not match expected', claim);
             return false;
         }
     } catch (error) {

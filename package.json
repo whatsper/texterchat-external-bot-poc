@@ -38,7 +38,8 @@
     "ajv": "^8.17.1",
     "express": "^4.21.1",
     "firebase-admin": "^12.7.0",
-    "lodash": "^4.17.21",
-    "http-terminator": "^3.2.0"
+    "google-auth-library": "^9.15.0",
+    "http-terminator": "^3.2.0",
+    "lodash": "^4.17.21"
   }
 }
