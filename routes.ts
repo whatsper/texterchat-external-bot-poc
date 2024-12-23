@@ -16,6 +16,7 @@ export function createRoutes(
     routes.post(
         '/webhook',
         async (request, response) => {
+            console.log('Received webhook request', JSON.stringify({body: request.body, headers: request.headers}));
             // Verify that the push request originates from Cloud Pub/Sub if service account name is provided.
             if (config.jwtServiceAccountName) {
                 const bearer = request.header('Authorization');
