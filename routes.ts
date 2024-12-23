@@ -12,7 +12,7 @@ export function createRoutes(
     }
 ){
     const routes = express();
-    const chatsCollection = firestore.collection('chats');
+    // const chatsCollection = firestore.collection('chats');
 
     routes.post(
         '/webhook',
