@@ -14,7 +14,7 @@ export function createConfig(
             GOOGLE_SERVICE_ACCOUNT_KEY: { type: 'string' },
             JWT_SERVICE_ACCOUNT_NAME: { type: 'string' },
         },
-        required: ['GOOGLE_SERVICE_ACCOUNT_KEY', 'JWT_SERVICE_ACCOUNT_NAME'],
+        required: ['GOOGLE_SERVICE_ACCOUNT_KEY'],
     });
 
     if (!validateEnvironment(process.env)) {
