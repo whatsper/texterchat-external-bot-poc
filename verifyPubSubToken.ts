@@ -33,13 +33,17 @@ export async function verifyPubSubToken(token: string, expectedServiceAccount: s
 
     try {
 
-        const tokenInfo = await authClient.getTokenInfo(token);
+        const ticket = await authClient.verifyIdToken({
+            idToken: token,
+        });
 
-        if(tokenInfo && tokenInfo.email === expectedServiceAccount && tokenInfo.email_verified){
-            validCachedTokens[token] = tokenInfo.expiry_date * 1000;
+        const claim = ticket.getPayload();
+
+        if(claim && claim.email === expectedServiceAccount && claim.email_verified){
+            validCachedTokens[token] = claim.exp * 1000;
             return true;
         } else {
-            console.warn('Token claims does not match expected', tokenInfo);
+            console.warn('Token email claims does not match expected', claim);
             return false;
         }
     } catch (error) {
