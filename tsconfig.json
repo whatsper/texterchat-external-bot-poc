@@ -10,7 +10,7 @@
     "strict": true,
     "target": "es2020",
     "skipLibCheck": true,
-    "types": ["jest", "node", "@types/jest"],
+    "types": ["node"],
     "strictNullChecks": true,
     "esModuleInterop": true,
     "noErrorTruncation": true,
