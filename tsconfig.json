@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "resolveJsonModule": true,
+    "module": "commonjs",
+    "noUnusedLocals": true,
+    "outDir": "build",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2020",
+    "skipLibCheck": true,
+    "types": ["jest", "node", "@types/jest"],
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "noErrorTruncation": true,
+  },
+  "compileOnSave": true,
+  "exclude": [
+    "build",
+    "node_modules"
+  ]
+}
