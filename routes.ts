@@ -85,6 +85,14 @@ export function createRoutes(
 
                 if (!chat.externalBot || chat.status !== 0) {
                     console.log('Ignoring message from chat not in external bot mode');
+                    console.log(JSON.stringify({
+                        jsonPayload: {
+                            message: {
+                                message: 'Chat',
+                                metadata: chat,
+                            }
+                        }
+                    }));
                     response.sendStatus(200);
                     return;
                 }
