@@ -22,6 +22,10 @@ export function createRoutes(
                 payload: 'get_session_messages',
             },
             {
+                title: 'Send random image',
+                payload: 'random_image',
+            },
+            {
                 title: 'Back to texter bot',
                 payload: 'back_to_texter_bot',
             },
@@ -130,16 +134,33 @@ export function createRoutes(
                             type: 'text',
                             text: 'You wrote before:\n\n' + textMessages,
                         });
-                        response.sendStatus(200);
-                        return;
                     } else {
                         await sendMessage(chatId, {
                             type: 'text',
                             text: 'I can`t find any text messages from you.',
                         });
-                        response.sendStatus(200);
-                        return;
                     }
+                    await sendMessage(chatId, repeatMenuMessage);
+                    response.sendStatus(200);
+                    return;
+                } else if (eventData.message.postback.payload === 'random_image') {
+                    const randomImageUrl = await getRandomPhotoURL();
+                    if (randomImageUrl) {
+                        await sendMessage(chatId, {
+                            type: 'media',
+                            media: [{
+                                mediaType: 'image',
+                                url: randomImageUrl,
+                            }],
+                        });
+                    } else {
+                        await sendMessage(chatId, {
+                            type: 'text',
+                            text: 'Sorry, can`t get a random image right now.',
+                        });
+                    }
+                    await sendMessage(chatId, repeatMenuMessage);
+                    response.sendStatus(200);
                 } else if (eventData.message.postback.payload === 'back_to_texter_bot') {
                     await callTexterApi('PATCH', '/api/v2/chats/' + chatId, {
                         externalBot: false,
@@ -212,6 +233,20 @@ export function createRoutes(
         } else {
             return true;
         }
+    }
+
+    async function getRandomPhotoURL(){
+        const response = await fetch(
+            'https://picsum.photos/500',
+            {
+                redirect: 'follow',
+                method: 'GET',
+            }
+        );
+        if (!response.ok) {
+            return null;
+        }
+        return response.url;
     }
 
     return routes;
