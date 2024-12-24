@@ -89,6 +89,8 @@ export function createRoutes(
             const token = bearer.replace(/^Bearer/, '');
             const verified = await verifyPubSubToken(token, config.jwtServiceAccountName);
             return verified;
+        } else {
+            return true;
         }
     }
 
