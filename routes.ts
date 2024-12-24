@@ -119,8 +119,8 @@ export function createRoutes(
                     }
                     // Note: This will get only messages before chat was set to external bot.
                     // After that you need to record session messages on your side if you need them.
-                    const messages = await callTexterApi('GET', '/api/v2/messages/chat/' + chatId, { botSessionId });
-                    const textMessages = messages
+                    const messagesResponse = await callTexterApi('GET', '/api/v2/messages/chat/' + chatId, { botSessionId });
+                    const textMessages = messagesResponse.messages
                         .filter((message: any) => message.type === 'text')
                         .map((message: any) => message.text)
                         .join('\n\n');
