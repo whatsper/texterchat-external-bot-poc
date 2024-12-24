@@ -70,10 +70,13 @@ export function createRoutes(
                     return;
                 }
 
-                if (eventName !== 'domain.message.created') {
+                if (
+                    eventName !== 'domain.message.created'
+                    || eventData.message.direction !== 'incoming'
+                ) {
                     // Note: It can be configured what events to send, in texterchat configuration
                     // and in Pub/Sub subscription in addition to that
-                    console.log('Ignoring unsupported event', eventName);
+                    console.log('Ignoring unsupported event or message direction', eventName);
                     response.sendStatus(200);
                     return;
                 }
