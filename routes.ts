@@ -62,6 +62,12 @@ export function createRoutes(
         }
     }
 
+    const sendMessageDelayed = (chatId: string, message: any, delayMs: number) => new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+            sendMessage(chatId, message).then(() => resolve()).catch((error) => reject(error));
+        }, delayMs);
+    });
+
     routes.post(
         '/webhook',
         async (request, response) => {
@@ -153,7 +159,7 @@ export function createRoutes(
                             text: 'I can`t find any text messages from you.',
                         });
                     }
-                    await sendMessage(chatId, repeatMenuMessage);
+                    await sendMessageDelayed(chatId, repeatMenuMessage, 3000);
                     response.sendStatus(200);
                     return;
                 } else if (eventData.message.postback.payload === 'random_image') {
@@ -172,7 +178,7 @@ export function createRoutes(
                             text: 'Sorry, can`t get a random image right now.',
                         });
                     }
-                    await sendMessage(chatId, repeatMenuMessage);
+                    await sendMessageDelayed(chatId, repeatMenuMessage, 3000);
                     response.sendStatus(200);
                 } else if (eventData.message.postback.payload === 'back_to_texter_bot') {
                     await callTexterApi('PATCH', '/api/v2/chats/' + chatId, {
