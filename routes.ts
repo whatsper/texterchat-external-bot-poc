@@ -121,7 +121,7 @@ export function createRoutes(
                     // After that you need to record session messages on your side if you need them.
                     const messagesResponse = await callTexterApi('GET', '/api/v2/messages/chat/' + chatId, { botSessionId });
                     const textMessages = messagesResponse.messages
-                        .filter((message: any) => message.type === 'text')
+                        .filter((message: any) => message.type === 'text' && message.direction === 'incoming')
                         .map((message: any) => message.text)
                         .join('\n\n');
 
