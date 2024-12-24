@@ -14,26 +14,39 @@ export function createRoutes(
     const routes = express();
 
     const initMenuMessage = {
-        type: 'buttons',
+        type: 'list',
         text: 'Hello! I am an external (micro-)bot connected to Texterchat. Please select an option below to get started.',
-        buttons: [
-            {
-                title: 'Get my text messages',
-                payload: 'get_session_messages',
-            },
-            {
-                title: 'Send random image',
-                payload: 'random_image',
-            },
-            {
-                title: 'Back to texter bot',
-                payload: 'back_to_texter_bot',
-            },
-            {
-                title: 'Resolve chat',
-                payload: 'resolve',
-            },
-        ],
+        list: {
+            button: 'Menu',
+            sections: [
+                {
+                    title: 'Something from this bot',
+                    rows: [
+                        {
+                            title: 'Get my text messages',
+                            payload: 'get_session_messages',
+                        },
+                        {
+                            title: 'Send random image',
+                            payload: 'random_image',
+                        },
+                    ],
+                },
+                {
+                    title: 'Return back',
+                    rows: [
+                        {
+                            title: 'Back to texter bot',
+                            payload: 'back_to_texter_bot',
+                        },
+                        {
+                            title: 'Resolve chat',
+                            payload: 'resolve',
+                        },
+                    ],
+                },
+            ],
+        },
     }
 
     const repeatMenuMessage = {
