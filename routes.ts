@@ -87,7 +87,8 @@ export function createRoutes(
                     return;
                 }
 
-                const chat = await callTexterApi('GET', '/api/v2/chats/' + eventData.message.parent_chat);
+                const chatId = eventData.message.parent_chat;
+                const chat = await callTexterApi('GET', '/api/v2/chats/' + chatId);
 
                 if (!chat.externalBot || chat.status !== 0) {
                     console.log('Ignoring message from chat not in external bot mode');
@@ -97,7 +98,7 @@ export function createRoutes(
 
                 if (eventData.message.type !== 'postback') {
                     console.log('Ignoring message that is not a postback');
-                    await sendMessage(chat._id, {
+                    await sendMessage(chatId, {
                         ...repeatMenuMessage,
                         text: 'Please select an option from the menu.',
                     });
@@ -109,7 +110,7 @@ export function createRoutes(
                     const botSessionId = chat.botState.id;
                     if (typeof botSessionId !== 'string') {
                         console.warn('Bot session ID not found');
-                        await sendMessage(chat._id, {
+                        await sendMessage(chatId, {
                             type: 'text',
                             text: 'Sorry, can`t find previous messages.',
                         });
@@ -118,21 +119,21 @@ export function createRoutes(
                     }
                     // Note: This will get only messages before chat was set to external bot.
                     // After that you need to record session messages on your side if you need them.
-                    const messages = await callTexterApi('GET', '/api/v2/messages/chat/' + chat._id, { botSessionId});
+                    const messages = await callTexterApi('GET', '/api/v2/messages/chat/' + chatId, { botSessionId });
                     const textMessages = messages
                         .filter((message: any) => message.type === 'text')
                         .map((message: any) => message.text)
                         .join('\n\n');
 
                     if (textMessages.length) {
-                        await sendMessage(chat._id, {
+                        await sendMessage(chatId, {
                             type: 'text',
                             text: 'You wrote before:\n\n' + textMessages,
                         });
                         response.sendStatus(200);
                         return;
                     } else {
-                        await sendMessage(chat._id, {
+                        await sendMessage(chatId, {
                             type: 'text',
                             text: 'I can`t find any text messages from you.',
                         });
@@ -140,18 +141,18 @@ export function createRoutes(
                         return;
                     }
                 } else if (eventData.message.postback.payload === 'back_to_texter_bot') {
-                    await callTexterApi('PATCH', '/api/v2/chats/' + chat._id, {
+                    await callTexterApi('PATCH', '/api/v2/chats/' + chatId, {
                         externalBot: false,
                     });
-                    await sendMessage(chat._id, {
+                    await sendMessage(chatId, {
                         type: 'text',
                         text: 'Ok, next messages will be handled by Texterchat bot, depending on the flow.',
                     });
                     response.sendStatus(200);
                     return;
                 } else if (eventData.message.postback.payload === 'resolve') {
-                    await callTexterApi('POST', `/api/v2/chats/${chat._id}/resolve`);
-                    await sendMessage(chat._id, {
+                    await callTexterApi('POST', `/api/v2/chats/${chatId}/resolve`);
+                    await sendMessage(chatId, {
                         type: 'text',
                         text: 'Chat resolved.',
                     });
