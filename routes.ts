@@ -110,8 +110,18 @@ export function createRoutes(
                     return;
                 }
 
-                const chatId = eventData.message.parent_chat;
-                const chat = await callTexterApi('GET', '/api/v2/chats/' + chatId);
+                const chatId = eventData.message.parent_chat,
+                    chat = await callTexterApi('GET', '/api/v2/chats/' + chatId);
+
+                if (eventData.message.timestamp < chat.lastIncomingMessageTimestamp) {
+                    // This is important to check because all the webhooks is asynchronous
+                    // and one may be delayed slightly more than other,
+                    // so we can get messages out of order and some of messages that sent before
+                    // bot set to external mode
+                    console.log('Ignoring message older than last chat update');
+                    response.sendStatus(200);
+                    return;
+                }
 
                 if (!chat.externalBot || chat.status !== 0) {
                     console.log('Ignoring message from chat not in external bot mode');
