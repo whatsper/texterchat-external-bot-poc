@@ -137,31 +137,28 @@ export function createRoutes(
                             type: 'text',
                             text: 'Sorry, can`t find previous messages.',
                         });
-                        response.sendStatus(200);
-                        return;
-                    }
-                    // Note: This will get only messages before chat was set to external bot.
-                    // After that you need to record session messages on your side if you need them.
-                    const messagesResponse = await callTexterApi('GET', '/api/v2/messages/chat/' + chatId, { botSessionId });
-                    const textMessages = messagesResponse.messages
-                        .filter((message: any) => message.type === 'text' && message.direction === 'incoming')
-                        .map((message: any) => message.text)
-                        .join('\n\n');
-
-                    if (textMessages.length) {
-                        await sendMessage(chatId, {
-                            type: 'text',
-                            text: 'You wrote before:\n\n' + textMessages,
-                        });
                     } else {
-                        await sendMessage(chatId, {
-                            type: 'text',
-                            text: 'I can`t find any text messages from you.',
-                        });
+                        // Note: This will get only messages before chat was set to external bot.
+                        // After that you need to record session messages on your side if you need them.
+                        const messagesResponse = await callTexterApi('GET', '/api/v2/messages/chat/' + chatId, { botSessionId });
+                        const textMessages = messagesResponse.messages
+                            .filter((message: any) => message.type === 'text' && message.direction === 'incoming')
+                            .map((message: any) => message.text)
+                            .join('\n\n');
+
+                        if (textMessages.length) {
+                            await sendMessage(chatId, {
+                                type: 'text',
+                                text: 'You wrote before:\n\n' + textMessages,
+                            });
+                        } else {
+                            await sendMessage(chatId, {
+                                type: 'text',
+                                text: 'I can`t find any text messages from you.',
+                            });
+                        }
                     }
                     await sendMessageDelayed(chatId, repeatMenuMessage, 3000);
-                    response.sendStatus(200);
-                    return;
                 } else if (eventData.message.postback.payload === 'random_image') {
                     const randomImageUrl = await getRandomPhotoURL();
                     if (randomImageUrl) {
@@ -179,7 +176,6 @@ export function createRoutes(
                         });
                     }
                     await sendMessageDelayed(chatId, repeatMenuMessage, 3000);
-                    response.sendStatus(200);
                 } else if (eventData.message.postback.payload === 'back_to_texter_bot') {
                     await callTexterApi('PATCH', '/api/v2/chats/' + chatId, {
                         externalBot: false,
@@ -188,8 +184,6 @@ export function createRoutes(
                         type: 'text',
                         text: 'Ok, next messages will be handled by Texterchat bot, depending on the flow.',
                     });
-                    response.sendStatus(200);
-                    return;
                 } else if (eventData.message.postback.payload === 'resolve') {
                     await callTexterApi('POST', `/api/v2/chats/${chatId}/resolve`);
                     await sendMessage(chatId, {
