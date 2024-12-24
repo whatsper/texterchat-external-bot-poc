@@ -49,7 +49,13 @@ export function createRoutes(
         '/webhook',
         async (request, response) => {
             try {
-                console.log('Received webhook request', JSON.stringify({body: request.body, headers: request.headers}));
+                console.log(JSON.stringify({
+                    message: 'Received webhook request',
+                    metadata: {
+                        body: request.body, 
+                        headers: request.headers
+                    },
+                }));
                 
                 if (!await verifyRequest(request)) {
                     response.sendStatus(401);
@@ -76,7 +82,7 @@ export function createRoutes(
                 ) {
                     // Note: It can be configured what events to send, in texterchat configuration
                     // and in Pub/Sub subscription in addition to that
-                    console.log('Ignoring unsupported event or message direction', eventName);
+                    console.log('Ignoring unsupported event or message direction: ' + eventName);
                     response.sendStatus(200);
                     return;
                 }
@@ -85,14 +91,6 @@ export function createRoutes(
 
                 if (!chat.externalBot || chat.status !== 0) {
                     console.log('Ignoring message from chat not in external bot mode');
-                    console.log(JSON.stringify({
-                        jsonPayload: {
-                            message: {
-                                message: 'Chat',
-                                metadata: chat,
-                            }
-                        }
-                    }));
                     response.sendStatus(200);
                     return;
                 }
@@ -158,7 +156,7 @@ export function createRoutes(
                         text: 'Chat resolved.',
                     });
                 } else {
-                    console.log('Ignoring unsupported postback', eventData.message.postback.payload);
+                    console.log('Ignoring unsupported postback: ' + eventData.message.postback.payload);
                 }
 
                 response.sendStatus(200);
